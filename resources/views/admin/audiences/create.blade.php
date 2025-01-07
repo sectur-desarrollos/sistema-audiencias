@@ -146,7 +146,8 @@ $('#add-companion').on('click', function () {
                 <input type="text" name="companions[${companionIndex}][nombre]" class="form-control" placeholder="Nombre">
             </div>
             <div class="col-md-2">
-                <input type="text" name="companions[${companionIndex}][telefono]" class="form-control" placeholder="Teléfono">
+                <input type="text" name="companions[${companionIndex}][telefono]" class="form-control" placeholder="Teléfono"  pattern="[0-9]+"
+                            oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="col-md-3">
                 <input type="email" name="companions[${companionIndex}][email]" class="form-control" placeholder="Correo Electrónico">

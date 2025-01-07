@@ -94,7 +94,8 @@
             <div class="modal-body text-center">
                 <p>Seleccione el tipo de PDF que desea generar:</p>
                 <button id="btn-pdf-full" class="btn btn-success btn-sm" target="_blank">Audiencia Completa</button>
-                <button id="btn-pdf-companies" class="btn btn-info btn-sm" target="_blank">Audiencia con Acompañantes</button>
+                <button id="btn-pdf-companies" class="btn btn-info btn-sm" target="_blank">Audiencia con
+                    Acompañantes</button>
             </div>
         </div>
     </div>
@@ -121,7 +122,66 @@
                         <label class="form-label"><strong>Nombre</strong></label>
                         <div class="form-control" id="audience-nombre"></div>
                     </div>
-                    <!-- Otros detalles... -->
+                    <!-- Apellido Paterno -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Apellido Paterno</strong></label>
+                        <div class="form-control" id="audience-apellido-paterno"></div>
+                    </div>
+                    <!-- Apellido Materno -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Apellido Materno</strong></label>
+                        <div class="form-control" id="audience-apellido-materno"></div>
+                    </div>
+                    <!-- Teléfono -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Teléfono</strong></label>
+                        <div class="form-control" id="audience-telefono"></div>
+                    </div>
+                    <!-- Email -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Correo Electrónico</strong></label>
+                        <div class="form-control" id="audience-email"></div>
+                    </div>
+                    <!-- Lugar/Dependencia -->
+                    <div class="col-md-12">
+                        <label class="form-label"><strong>Lugar/Dependencia</strong></label>
+                        <div class="form-control" id="audience-lugar-dependencia"></div>
+                    </div>
+                    <!-- Asunto -->
+                    <div class="col-md-12">
+                        <label class="form-label"><strong>Asunto</strong></label>
+                        <div class="form-control" id="audience-asunto"></div>
+                    </div>
+                    <!-- Fecha -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Fecha de Llegada</strong></label>
+                        <div class="form-control" id="audience-fecha-llegada"></div>
+                    </div>
+                    <!-- Hora -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Hora de Llegada</strong></label>
+                        <div class="form-control" id="audience-hora-llegada"></div>
+                    </div>
+                    <!-- Tipo de Contacto -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Tipo de Contacto</strong></label>
+                        <div class="form-control" id="audience-tipo-contacto"></div>
+                    </div>
+                    <!-- Cargo -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Cargo</strong></label>
+                        <div class="form-control" id="audience-cargo"></div>
+                    </div>
+                    <!-- Observación -->
+                    <div class="col-md-12">
+                        <label class="form-label"><strong>Observación</strong></label>
+                        <div class="form-control" id="audience-observacion"></div>
+                    </div>
+                    <!-- Observación -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Estado de la audiencia</strong></label>
+                        <div class="form-control" id="audience-status"></div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer d-flex justify-content-between">
@@ -152,6 +212,30 @@
         $("#btn-pdf-companies").on("click", function () {
             window.open(`/audiences/${selectedAudienceId}/pdf-companies`, '_blank');
         });
+
+        // Manejar el evento click en los botones de mostrar
+        $(".btn-show").on("click", function () {
+            console.log('hola')
+            let audience = $(this).data("audience");
+            console.log(audience)
+
+            // Llenar los datos en el modal
+            $("#audience-folio").text(audience.folio || "N/A");
+            $("#audience-nombre").text(audience.nombre || "N/A");
+            $("#audience-apellido-paterno").text(audience.apellido_paterno || "N/A");
+            $("#audience-apellido-materno").text(audience.apellido_materno || "N/A");
+            $("#audience-asunto").text(audience.asunto || "N/A");
+            $("#audience-fecha-llegada").text(audience.fecha_llegada || "N/A");
+            $("#audience-hora-llegada").text(audience.hora_llegada || "N/A");
+            $("#audience-telefono").text(audience.telefono || "N/A");
+            $("#audience-lugar-dependencia").text(audience.dependency.name || "N/A");
+            $("#audience-tipo-contacto").text(audience.contact_type.name || "N/A");
+            $("#audience-cargo").text(audience.cargo || "N/A");
+            $("#audience-email").text(audience.email || "N/A");
+            $("#audience-observacion").text(audience.observacion || "N/A");
+            $("#audience-status").text(audience.status.name || "N/A");
+        });
     });
+
 </script>
 @endpush
