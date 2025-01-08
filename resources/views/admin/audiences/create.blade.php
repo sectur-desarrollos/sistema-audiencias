@@ -133,41 +133,53 @@
             allowClear: true, // Permite limpiar la selección
             width: '100%' // Ajusta el ancho del select
         });
-    });
 
 
-    let companionIndex = 1;
+        let companionIndex = 1;
+        const maxCompanions = 10; // Máximo de acompañantes permitidos
 
-$('#add-companion').on('click', function () {
-    const container = $('#companions-container');
-    const newRow = `
-        <div class="row g-3 companion-row mb-2">
-            <div class="col-md-3">
-                <input type="text" name="companions[${companionIndex}][nombre]" class="form-control" placeholder="Nombre">
-            </div>
-            <div class="col-md-2">
-                <input type="text" name="companions[${companionIndex}][telefono]" class="form-control" placeholder="Teléfono"  pattern="[0-9]+"
+        $('#add-companion').on('click', function () {
+            const container = $('#companions-container');
+
+            // Verificar si ya se alcanzó el límite
+            if ($('.companion-row').length >= maxCompanions) {
+                alert('Solo puedes agregar un máximo de 10 acompañantes.');
+                return;
+            }
+
+            const newRow = `
+                <div class="row g-3 companion-row mb-2">
+                    <div class="col-md-3">
+                        <input type="text" name="companions[${companionIndex}][nombre]" class="form-control" placeholder="Nombre">
+                    </div>
+                    <div class="col-md-2">
+                        <input type="text" name="companions[${companionIndex}][telefono]" class="form-control" placeholder="Teléfono" pattern="[0-9]+"
                             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            </div>
-            <div class="col-md-3">
-                <input type="email" name="companions[${companionIndex}][email]" class="form-control" placeholder="Correo Electrónico">
-            </div>
-            <div class="col-md-3">
-                <input type="text" name="companions[${companionIndex}][cargo]" class="form-control" placeholder="Cargo">
-            </div>
-            <div class="col-md-1 d-flex align-items-center">
-                <button type="button" class="btn btn-sm btn-danger remove-companion">Eliminar</button>
-            </div>
-        </div>
-    `;
-    container.append(newRow);
-    companionIndex++;
-});
+                    </div>
+                    <div class="col-md-3">
+                        <input type="email" name="companions[${companionIndex}][email]" class="form-control" placeholder="Correo Electrónico">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="text" name="companions[${companionIndex}][cargo]" class="form-control" placeholder="Cargo">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-center">
+                        <button type="button" class="btn btn-sm btn-danger remove-companion">Eliminar</button>
+                    </div>
+                </div>
+            `;
+            container.append(newRow);
+            companionIndex++;
+        });
 
-$(document).on('click', '.remove-companion', function () {
-    $(this).closest('.companion-row').remove();
-});
+        $(document).on('click', '.remove-companion', function () {
+            $(this).closest('.companion-row').remove();
 
+            // Rehabilitar el botón si el número de acompañantes vuelve a ser menor al máximo
+            if ($('.companion-row').length < maxCompanions) {
+                $('#add-companion').prop('disabled', false);
+            }
+        });
 
+    });
 </script>
 @endpush

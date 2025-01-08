@@ -3,85 +3,23 @@
 @section('nombre_seccion', 'Audiencias')
 
 @section('contenido')
-@if ($errors->any())
-<div class="alert alert-danger">{{ $errors->first() }}</div>
-@endif
-@if (session('success'))
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-    {{ session('success') }}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-@endif
-<div class="container mt-4">
     <a href="{{ route('audiences.create') }}" class="btn btn-primary mb-3">Nueva Audiencia</a>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Asunto</th>
-                <th>Estado</th>
-                <th>Fecha/Hora</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($audiences as $audience)
-            <tr>
-                <!-- Nombre -->
-                <td>{{ $audience->nombre }} {{ $audience->apellido_paterno }} {{ $audience->apellido_materno }}</td>
+    
+    <div class="table-responsive">
+            {{-- <table id="audiences-table" class="table table-bordered" > --}}
+        <table id="audiences-table" class="table table-bordered display nowrap" style="width:100%">
 
-                <!-- Asunto -->
-                <td>{{ $audience->asunto }}</td>
-
-                <!-- Estado con badge -->
-                <td>
-                    @if($audience->status)
-                    <span title="{{ $audience->status->description }}" class="badge"
-                        style="background-color: {{ $audience->status->color }}; color: #fff;">
-                        {{ $audience->status->name }}
-                    </span>
-                    @else
-                    <span class="badge bg-secondary">Sin Estado</span>
-                    @endif
-                </td>
-
-                <!-- Fecha/Hora -->
-                <td>
-                    {{ \Carbon\Carbon::parse($audience->fecha_llegada)->format('Y-m-d') }}
-                    {{ \Carbon\Carbon::parse($audience->hora_llegada)->format('H:i:s') }}
-                </td>
-
-                <!-- Acciones -->
-                <td class="text-center">
-                    <!-- Botón para PDF -->
-                    <button type="button" class="btn btn-success btn-sm btn-pdf" title="Generar PDF"
-                        data-bs-toggle="modal" data-bs-target="#pdfModal" data-id="{{ $audience->id }}">
-                        <i class="bi bi-file-earmark-pdf-fill"></i>
-                    </button>
-                    <!-- Botón para mostrar -->
-                    <button type="button" class="btn btn-info btn-sm btn-show" data-bs-toggle="modal"
-                        data-bs-target="#showAudienceModal" data-audience="{{ $audience->toJson() }}">
-                        <i class="bi bi-eye-fill" title="Mostrar"></i>
-                    </button>
-                    <!-- Botón para editar -->
-                    <a href="{{ route('audiences.edit', $audience) }}" class="btn btn-warning btn-sm" title="Editar">
-                        <i class="bi bi-pencil-fill"></i>
-                    </a>
-                    <!-- Botón para eliminar -->
-                    <form action="{{ route('audiences.destroy', $audience) }}" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button class="btn btn-danger btn-sm" title="Eliminar"
-                            onclick="return confirm('¿Eliminar esta audiencia?')">
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Asunto</th>
+                    <th>Estado</th>
+                    <th>Fecha/Hora</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
 
 <!-- Modal para seleccionar tipo de PDF -->
 <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
@@ -94,16 +32,14 @@
             <div class="modal-body text-center">
                 <p>Seleccione el tipo de PDF que desea generar:</p>
                 <button id="btn-pdf-full" class="btn btn-success btn-sm" target="_blank">Audiencia Completa</button>
-                <button id="btn-pdf-companies" class="btn btn-info btn-sm" target="_blank">Audiencia con
-                    Acompañantes</button>
+                <button id="btn-pdf-companies" class="btn btn-info btn-sm" target="_blank">Audiencia con Acompañantes</button>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal para mostrar detalles de la audiencia -->
-<div class="modal fade" id="showAudienceModal" tabindex="-1" aria-labelledby="showAudienceModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="showAudienceModal" tabindex="-1" aria-labelledby="showAudienceModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
@@ -112,7 +48,7 @@
             </div>
             <div class="modal-body">
                 <div class="row g-3">
-                    <!-- Folio -->
+                    <!-- Campos dinámicos para detalles -->
                     <div class="col-md-6">
                         <label class="form-label"><strong>Folio</strong></label>
                         <div class="form-control" id="audience-folio"></div>
@@ -184,13 +120,12 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer d-flex justify-content-between">
+            <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('js')
@@ -198,44 +133,94 @@
     $(document).ready(function () {
         let selectedAudienceId = null;
 
-        // Manejar el evento click en el botón PDF
-        $(".btn-pdf").on("click", function () {
-            selectedAudienceId = $(this).data("id");
-        });
-
-        // Redirigir al PDF completo
-        $("#btn-pdf-full").on("click", function () {
-            window.open(`/audiences/${selectedAudienceId}/pdf`, '_blank');
-        });
-
-        // Redirigir al PDF completo
-        $("#btn-pdf-companies").on("click", function () {
-            window.open(`/audiences/${selectedAudienceId}/pdf-companies`, '_blank');
-        });
-
-        // Manejar el evento click en los botones de mostrar
-        $(".btn-show").on("click", function () {
-            console.log('hola')
-            let audience = $(this).data("audience");
-            console.log(audience)
-
-            // Llenar los datos en el modal
-            $("#audience-folio").text(audience.folio || "N/A");
-            $("#audience-nombre").text(audience.nombre || "N/A");
-            $("#audience-apellido-paterno").text(audience.apellido_paterno || "N/A");
-            $("#audience-apellido-materno").text(audience.apellido_materno || "N/A");
-            $("#audience-asunto").text(audience.asunto || "N/A");
-            $("#audience-fecha-llegada").text(audience.fecha_llegada || "N/A");
-            $("#audience-hora-llegada").text(audience.hora_llegada || "N/A");
-            $("#audience-telefono").text(audience.telefono || "N/A");
-            $("#audience-lugar-dependencia").text(audience.dependency.name || "N/A");
-            $("#audience-tipo-contacto").text(audience.contact_type.name || "N/A");
-            $("#audience-cargo").text(audience.cargo || "N/A");
-            $("#audience-email").text(audience.email || "N/A");
-            $("#audience-observacion").text(audience.observacion || "N/A");
-            $("#audience-status").text(audience.status.name || "N/A");
-        });
+        // Inicializar DataTable
+        const table = $('#audiences-table').DataTable({
+        processing: true,
+        serverSide: true,
+        responsive: true, // Habilitar modo responsive
+        ajax: "{{ route('audiences.data') }}",
+        columns: [
+            { data: 'nombre', name: 'nombre', orderable: false, searchable: true },
+            { data: 'asunto', name: 'asunto', orderable: false },
+            { data: 'status_badge', name: 'status_badge', orderable: false, searchable: false },
+            { data: 'fecha_llegada', name: 'fecha_llegada', orderable: false },
+            { data: 'actions', name: 'actions', orderable: false, searchable: false }
+        ],
+        language: {
+            lengthMenu: "Mostrar _MENU_ registros",
+            zeroRecords: "No se encontraron registros",
+            info: "Mostrando página _PAGE_ de _PAGES_",
+            infoEmpty: "No hay registros disponibles",
+            infoFiltered: "(filtrado de _MAX_ registros totales)",
+            search: "Buscar:",
+            paginate: {
+                next: "Siguiente",
+                previous: "Anterior"
+            }
+        },
+        // Estas lineas de abajo son para mantener el estado de la paginación de DataTables
+        stateSave: true,
+        stateSaveCallback: function(settings,data) {
+            localStorage.setItem( 'DataTables_' + settings.sInstance, JSON.stringify(data) )
+        },
+        stateLoadCallback: function(settings) {
+            return JSON.parse( localStorage.getItem( 'DataTables_' + settings.sInstance ) )
+        }
     });
 
+
+        // Manejar eventos en botones de acciones
+        $('#audiences-table').on('click', '.btn-action', function () {
+            const action = $(this).data('action');
+            const id = $(this).data('id');
+            if (action === 'pdf') {
+                selectedAudienceId = id;
+                $('#pdfModal').modal('show');
+            } else if (action === 'show') {
+                const audience = table.row($(this).parents('tr')).data();
+                $("#audience-folio").text(audience.folio || "N/A");
+                $("#audience-nombre").text(audience.nombre || "N/A");
+                $("#audience-apellido-paterno").text(audience.apellido_paterno || "N/A");
+                $("#audience-apellido-materno").text(audience.apellido_materno || "N/A");
+                $("#audience-asunto").text(audience.asunto || "N/A");
+                $("#audience-fecha-llegada").text(audience.fecha_llegada || "N/A");
+                $("#audience-hora-llegada").text(audience.hora_llegada || "N/A");
+                $("#audience-telefono").text(audience.telefono || "N/A");
+                $("#audience-lugar-dependencia").text(audience.dependency.name || "N/A");
+                $("#audience-tipo-contacto").text(audience.contact_type.name || "N/A");
+                $("#audience-cargo").text(audience.cargo || "N/A");
+                $("#audience-email").text(audience.email || "N/A");
+                $("#audience-observacion").text(audience.observacion || "N/A");
+                $("#audience-status").text(audience.status.name || "N/A");
+                // Rellenar otros campos dinámicamente...
+                $('#showAudienceModal').modal('show');
+            } else if (action === 'delete') {
+                if (confirm('¿Eliminar esta audiencia?')) {
+                    $.ajax({
+                        url: `/audiences/${id}`,
+                        method: 'DELETE',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        success: function () {
+                            table.ajax.reload();
+                            alert('Audiencia eliminada correctamente');
+                        },
+                        error: function () {
+                            alert('Hubo un error al eliminar la audiencia');
+                        }
+                    });
+                }
+            }
+        });
+
+        // Generar PDFs desde el modal
+        $('#btn-pdf-full').on('click', function () {
+            window.open(`/audiences/${selectedAudienceId}/pdf`, '_blank');
+        });
+        $('#btn-pdf-companies').on('click', function () {
+            window.open(`/audiences/${selectedAudienceId}/pdf-companies`, '_blank');
+        });
+    });
 </script>
 @endpush

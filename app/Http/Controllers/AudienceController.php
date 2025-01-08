@@ -8,6 +8,7 @@ use App\Models\ContactType;
 use App\Models\Dependency;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Yajra\DataTables\Facades\DataTables as FacadesDataTables;
 
 class AudienceController extends Controller
 {
@@ -16,8 +17,7 @@ class AudienceController extends Controller
      */
     public function index()
     {
-        $audiences = Audience::with('contactType', 'dependency', 'status')->get();
-        return view('admin.audiences.index', compact('audiences'));
+        return view('admin.audiences.index');
     }
 
     /**
@@ -80,14 +80,10 @@ class AudienceController extends Controller
         return redirect()->route('audiences.index')->with('success', 'Audiencia creada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Audience $audience)
     {
         //
     }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -146,10 +142,15 @@ class AudienceController extends Controller
      */
     public function destroy(Audience $audience)
     {
-        $audience->delete();
-        return redirect()->route('audiences.index')->with('success', 'Audiencia eliminada exitosamente.');
+        try {
+            $audience->delete();
+            return response()->json(['success' => 'Audiencia eliminada correctamente.'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['error' => 'Error al eliminar la audiencia.'], 500);
+        }
     }
-
+    
+    // PDF Con toda la información
     public function generatePDF(Audience $audience)
     {
         $pdf = Pdf::loadView('admin.audiences.pdf-4', compact('audience'));
@@ -159,6 +160,7 @@ class AudienceController extends Controller
         return $pdf->stream('audiencia_' . $audience->folio . '.pdf');
     }
 
+    // PDF con solo los nombres de los acompañantes
     public function generateCompaniesPDF(Audience $audience)
     {
         $pdf = Pdf::loadView('admin.audiences.pdf-5', compact('audience'));
@@ -170,6 +172,102 @@ class AudienceController extends Controller
         return $pdf->stream('audiencia_' . $audience->folio . '.pdf');
     }
 
-    
+    // Listado de información de audiencias para Datatables
+    public function getAudiencesData()
+    {
+        return FacadesDataTables::eloquent(
+            Audience::with('status', 'dependency', 'contactType') // Carga la relación 'status'
+                ->orderByRaw("
+                    CASE 
+                        WHEN (SELECT name FROM audience_statuses WHERE id = audiences.audience_status_id) = 'Iniciado' THEN 1
+                        WHEN (SELECT name FROM audience_statuses WHERE id = audiences.audience_status_id) = 'En Proceso' THEN 2
+                        ELSE 3
+                    END
+                ")
+                ->orderBy('fecha_llegada', 'desc') // Orden secundario por fecha
+        )
+        ->addColumn('nombre', function ($row) {
+            return $row->nombre . ' ' . $row->apellido_paterno . ' ' . $row->apellido_materno;
+        })
+        ->filterColumn('nombre', function ($query, $keyword) {
+            $query->whereRaw("CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) LIKE ?", ["%{$keyword}%"]);
+        })
+        ->addColumn('status_badge', function ($row) {
+            if ($row->status) {
+                return '<span title="' . $row->status->description . '" class="badge"
+                        style="background-color: ' . $row->status->color . '; color: #fff;">
+                        ' . $row->status->name . '</span>';
+            }
+            return '<span class="badge bg-secondary">Sin Estado</span>';
+        })
+        ->addColumn('actions', function ($row) {
+            return view('admin.audiences.partials.actions', compact('row'))->render();
+        })
+        ->rawColumns(['status_badge', 'actions'])
+        ->toJson();
+    }
 
+
+
+
+    /*       idea para filtros              */
+    public function showFilterView()
+    {
+        return view('admin.audiences.filter');
+    }
+
+    public function filter(Request $request)
+    {
+        $startDate = $request->start_date;
+        $endDate = $request->end_date;
+
+        $query = Audience::with('status', 'dependency', 'contactType');
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('fecha_llegada', [$startDate, $endDate]);
+        }
+
+        return FacadesDataTables::eloquent(
+            $query->orderBy('fecha_llegada', 'desc')
+        )
+        ->addColumn('nombre', function ($row) {
+            return $row->nombre . ' ' . $row->apellido_paterno . ' ' . $row->apellido_materno;
+        })
+        ->filterColumn('nombre', function ($query, $keyword) {
+            $query->whereRaw("CONCAT(nombre, ' ', apellido_paterno, ' ', apellido_materno) LIKE ?", ["%{$keyword}%"]);
+        })
+        ->addColumn('status_badge', function ($row) {
+            if ($row->status) {
+                return '<span title="' . $row->status->description . '" class="badge"
+                        style="background-color: ' . $row->status->color . '; color: #fff;">
+                        ' . $row->status->name . '</span>';
+            }
+            return '<span class="badge bg-secondary">Sin Estado</span>';
+        })
+        ->addColumn('actions', function ($row) {
+            return view('admin.audiences.partials.actions', compact('row'))->render();
+        })
+        ->rawColumns(['status_badge', 'actions'])
+        ->toJson();
+    }
+
+    public function exportToPDF(Request $request)
+    {
+        $audienceIds = $request->ids;
+
+        $query = Audience::with('status', 'dependency', 'contactType');
+
+        if ($audienceIds) {
+            $query->whereIn('id', $audienceIds);
+        }
+
+        $audience = $query->get();
+
+        // dd($audience);
+
+        $pdf = Pdf::loadView('admin.audiences.pdf-3', compact('audience'));
+        $pdf->setPaper([0, 0, 419.53, 250], 'portrait');
+
+        return $pdf->stream('audiencia.pdf');
+    }
 }

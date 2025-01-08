@@ -7,6 +7,7 @@
     <script src="{{asset('assets/bootstrap/assets_general/js/color-modes.js')}}"></script>
 
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Sistemas de Audiencia">
     <meta name="author" content="Secretaría de Turismo - Gobierno del Estado de Chiapas">
@@ -25,8 +26,10 @@
 
     {{-- select2 CSS/JS--}}
     <link href="{{asset('assets/select2/css/select2.min.css')}}" rel="stylesheet" />
-    
 
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
+    
 
     <style>
         .bd-placeholder-img {
@@ -300,6 +303,13 @@
                                     Audiencias
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('audiences.filter.view') }}">
+                                    <svg class="bi">
+                                        <use xlink:href="#file-earmark" /></svg>
+                                    Filtros y Reportes
+                                </a>
+                            </li>
                             {{-- <li class="nav-item">
                                 <a class="nav-link d-flex align-items-center gap-2" href="#">
                                     <svg class="bi">
@@ -416,50 +426,6 @@
                                     style="cursor:auto"></a></li>
                         </ul>
 
-                        {{-- <h6
-                            class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-body-secondary text-uppercase">
-                            <span>Saved reports</span>
-                            <a class="link-secondary" href="#" aria-label="Add a new report">
-                                <svg class="bi">
-                                    <use xlink:href="#plus-circle" /></svg>
-                            </a>
-                        </h6>
-                        <ul class="nav flex-column mb-auto">
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="#">
-                                    <svg class="bi">
-                                        <use xlink:href="#file-earmark-text" /></svg>
-                                    Current month
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="#">
-                                    <svg class="bi">
-                                        <use xlink:href="#file-earmark-text" /></svg>
-                                    Last quarter
-                                </a>
-                            </li>
-
-                        </ul>
-
-                        <hr class="my-3">
-
-                        <ul class="nav flex-column mb-auto">
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="#">
-                                    <svg class="bi">
-                                        <use xlink:href="#gear-wide-connected" /></svg>
-                                    Settings
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link d-flex align-items-center gap-2" href="#">
-                                    <svg class="bi">
-                                        <use xlink:href="#door-closed" /></svg>
-                                    Sign out
-                                </a>
-                            </li>
-                        </ul> --}}
                     </div>
                 </div>
             </div>
@@ -479,153 +445,6 @@
                 <div class="container mt-4">
                     @yield('contenido')
                 </div>
-                {{-- <div
-                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">Dashboard</h1>
-                    <div class="btn-toolbar mb-2 mb-md-0">
-                        <div class="btn-group me-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Share</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Export</button>
-                        </div>
-                        <button type="button"
-                            class="btn btn-sm btn-outline-secondary dropdown-toggle d-flex align-items-center gap-1">
-                            <svg class="bi">
-                                <use xlink:href="#calendar3" /></svg>
-                            This week
-                        </button>
-                    </div>
-                </div>
-
-                <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
-
-                <h2>Section title</h2>
-                <div class="table-responsive small">
-                    <table class="table table-striped table-sm">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Header</th>
-                                <th scope="col">Header</th>
-                                <th scope="col">Header</th>
-                                <th scope="col">Header</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>1,001</td>
-                                <td>random</td>
-                                <td>data</td>
-                                <td>placeholder</td>
-                                <td>text</td>
-                            </tr>
-                            <tr>
-                                <td>1,002</td>
-                                <td>placeholder</td>
-                                <td>irrelevant</td>
-                                <td>visual</td>
-                                <td>layout</td>
-                            </tr>
-                            <tr>
-                                <td>1,003</td>
-                                <td>data</td>
-                                <td>rich</td>
-                                <td>dashboard</td>
-                                <td>tabular</td>
-                            </tr>
-                            <tr>
-                                <td>1,003</td>
-                                <td>information</td>
-                                <td>placeholder</td>
-                                <td>illustrative</td>
-                                <td>data</td>
-                            </tr>
-                            <tr>
-                                <td>1,004</td>
-                                <td>text</td>
-                                <td>random</td>
-                                <td>layout</td>
-                                <td>dashboard</td>
-                            </tr>
-                            <tr>
-                                <td>1,005</td>
-                                <td>dashboard</td>
-                                <td>irrelevant</td>
-                                <td>text</td>
-                                <td>placeholder</td>
-                            </tr>
-                            <tr>
-                                <td>1,006</td>
-                                <td>dashboard</td>
-                                <td>illustrative</td>
-                                <td>rich</td>
-                                <td>data</td>
-                            </tr>
-                            <tr>
-                                <td>1,007</td>
-                                <td>placeholder</td>
-                                <td>tabular</td>
-                                <td>information</td>
-                                <td>irrelevant</td>
-                            </tr>
-                            <tr>
-                                <td>1,008</td>
-                                <td>random</td>
-                                <td>data</td>
-                                <td>placeholder</td>
-                                <td>text</td>
-                            </tr>
-                            <tr>
-                                <td>1,009</td>
-                                <td>placeholder</td>
-                                <td>irrelevant</td>
-                                <td>visual</td>
-                                <td>layout</td>
-                            </tr>
-                            <tr>
-                                <td>1,010</td>
-                                <td>data</td>
-                                <td>rich</td>
-                                <td>dashboard</td>
-                                <td>tabular</td>
-                            </tr>
-                            <tr>
-                                <td>1,011</td>
-                                <td>information</td>
-                                <td>placeholder</td>
-                                <td>illustrative</td>
-                                <td>data</td>
-                            </tr>
-                            <tr>
-                                <td>1,012</td>
-                                <td>text</td>
-                                <td>placeholder</td>
-                                <td>layout</td>
-                                <td>dashboard</td>
-                            </tr>
-                            <tr>
-                                <td>1,013</td>
-                                <td>dashboard</td>
-                                <td>irrelevant</td>
-                                <td>text</td>
-                                <td>visual</td>
-                            </tr>
-                            <tr>
-                                <td>1,014</td>
-                                <td>dashboard</td>
-                                <td>illustrative</td>
-                                <td>rich</td>
-                                <td>data</td>
-                            </tr>
-                            <tr>
-                                <td>1,015</td>
-                                <td>random</td>
-                                <td>tabular</td>
-                                <td>information</td>
-                                <td>text</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div> --}}
             </main>
         </div>
     </div>
@@ -638,9 +457,12 @@
 
     {{-- Jquery JS --}}
     <script src="{{asset('assets/jquery/js/jquery-3-7-1.min.js')}}"></script>
-    {{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
 
     <script src="{{asset('assets/select2/js/select2.min.js')}}"></script>
+
+    {{-- Js de Datatables --}}
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 
     @stack('js')
 </body>
