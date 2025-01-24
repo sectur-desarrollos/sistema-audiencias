@@ -25,7 +25,9 @@ class Audience extends Model
         'observacion',
         'contact_type_id',
         'dependency_id',
-        'audience_status_id'
+        'audience_status_id',
+        'state_id',
+        'municipality_id'
     ];
 
     protected $casts = [
@@ -51,5 +53,15 @@ class Audience extends Model
     public function companions()
     {
         return $this->hasMany(Companion::class, 'audience_id');
+    }
+    
+    public function state()
+    {
+        return $this->belongsTo(State::class, 'state_id');
+    }
+
+    public function municipality()
+    {
+        return $this->belongsTo(Municipality::class, 'municipality_id');
     }
 }

@@ -6,6 +6,8 @@ use App\Models\Audience;
 use App\Models\AudienceStatus;
 use App\Models\ContactType;
 use App\Models\Dependency;
+use App\Models\State;
+use App\Models\Municipality;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Yajra\DataTables\Facades\DataTables as FacadesDataTables;
@@ -28,7 +30,9 @@ class AudienceController extends Controller
         $contactTypes = ContactType::where('activo', true)->get();
         $dependencies = Dependency::where('activo', true)->get();
         $statuses = AudienceStatus::where('activo', true)->get();
-        return view('admin.audiences.create', compact('contactTypes', 'dependencies', 'statuses'));
+        $states = State::where('activo', true)->get(); // Cargar estados activos
+        $municipalities = Municipality::where('activo', true)->get(); // Cargar municipios activos
+        return view('admin.audiences.create', compact('contactTypes', 'dependencies', 'statuses', 'states', 'municipalities'));
     }
 
     /**
@@ -56,6 +60,9 @@ class AudienceController extends Controller
             'companions.*.telefono' => 'nullable|string|max:15',
             'companions.*.email' => 'nullable|email|max:255',
             'companions.*.cargo' => 'nullable|string|max:255',
+            // Estado y Municipio
+            'state_id' => 'required|exists:states,id',
+            'municipality_id' => 'nullable|exists:municipalities,id',
         ]);
 
         // Generar el folio único
@@ -92,7 +99,9 @@ class AudienceController extends Controller
         $contactTypes = ContactType::where('activo', true)->get();
         $dependencies = Dependency::where('activo', true)->get();
         $statuses = AudienceStatus::where('activo', true)->get();
-        return view('admin.audiences.edit', compact('audience','contactTypes', 'dependencies', 'statuses'));
+        $states = State::where('activo', true)->get(); // Cargar estados activos
+        $municipalities = Municipality::where('activo', true)->get(); // Cargar municipios activos
+        return view('admin.audiences.edit', compact('audience', 'contactTypes', 'dependencies', 'statuses', 'states', 'municipalities'));
     }
 
     /**
@@ -120,6 +129,9 @@ class AudienceController extends Controller
             'companions.*.telefono' => 'nullable|string|max:15',
             'companions.*.email' => 'nullable|email|max:255',
             'companions.*.cargo' => 'nullable|string|max:255',
+            // Estado y Municipio
+            'state_id' => 'required|exists:states,id',
+            'municipality_id' => 'nullable|exists:municipalities,id',
         ]);
 
         // Actualizar el registro
@@ -176,7 +188,7 @@ class AudienceController extends Controller
     public function getAudiencesData()
     {
         return FacadesDataTables::eloquent(
-            Audience::with('status', 'dependency', 'contactType') // Carga la relación 'status'
+            Audience::with('status', 'dependency', 'contactType', 'state', 'municipality') // Carga la relación 'status'
                 ->orderByRaw("
                     CASE 
                         WHEN (SELECT name FROM audience_statuses WHERE id = audiences.audience_status_id) = 'Iniciado' THEN 1
@@ -255,7 +267,7 @@ class AudienceController extends Controller
     {
         $audienceIds = $request->ids;
 
-        $query = Audience::with('status', 'dependency', 'contactType');
+        $query = Audience::with('status', 'dependency', 'contactType', 'state', 'municipality');
 
         if ($audienceIds) {
             $query->whereIn('id', $audienceIds);

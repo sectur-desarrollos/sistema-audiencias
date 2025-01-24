@@ -6,7 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependencyController;
-
+use App\Http\Controllers\MunicipalityController;
+use App\Http\Controllers\StateController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
@@ -15,6 +16,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
 Route::get('/audiences/data', [AudienceController::class, 'getAudiencesData'])->name('audiences.data');
 Route::get('/audiences/filter', [AudienceController::class, 'filter'])->name('audiences.filter');
 Route::post('/audiences/export-pdf', [AudienceController::class, 'exportToPDF'])->name('audiences.export.pdf');
+Route::get('/municipalities/{state}', [MunicipalityController::class, 'getByState'])->name('getMunicipalitiesByState');
+
     
 Route::middleware(['auth'])->group(function () {
     
@@ -38,5 +41,11 @@ Route::middleware(['auth'])->group(function () {
 
     // Catalogo de estados de la audiencia
     Route::resource('audience-statuses', AudienceStatusController::class)->names('audience-statuses');
+
+    // Estados de la republica
+    Route::resource('states', StateController::class)->except(['show'])->names('states');
+
+    // Municipios de la república
+    Route::resource('municipalities', MunicipalityController::class)->names('municipalities');
 
 });

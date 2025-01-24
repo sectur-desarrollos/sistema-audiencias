@@ -47,14 +47,20 @@ class DatabaseSeeder extends Seeder
         ]);
         // Estatus de Audiencia
         $statuses = [
-            ['name' => 'Iniciado', 'description' => 'La audiencia está en etapa inicial.', 'activo' => true],
-            ['name' => 'En Proceso', 'description' => 'La audiencia está en curso.', 'activo' => true],
-            ['name' => 'Cancelado', 'description' => 'La audiencia ha sido cancelada.', 'activo' => true],
-            ['name' => 'Finalizado', 'description' => 'La audiencia ha finalizado.', 'activo' => true],
+            ['name' => 'Iniciado', 'description' => 'La audiencia está en etapa inicial.', 'color' => '#0a2ee6', 'activo' => true],
+            ['name' => 'En Proceso', 'description' => 'La audiencia está en curso.', 'color' => '#22e225', 'activo' => true],
+            ['name' => 'Cancelado', 'description' => 'La audiencia ha sido cancelada.', 'color' => '#ff1100', 'activo' => true],
+            ['name' => 'Finalizado', 'description' => 'La audiencia ha finalizado.', 'color' => '#999999', 'activo' => true],
         ];
 
         foreach ($statuses as $status) {
             AudienceStatus::create($status);
         }
+
+        // Estados de la republica seeder
+        $this->call(StatesTableSeeder::class);
+        
+        // Municipios de la republica seeder
+        $this->call(MunicipalitiesTableSeeder::class);
     }
 }

@@ -27,6 +27,8 @@ return new class extends Migration
             $table->foreignId('contact_type_id')->constrained('contact_types');
             $table->foreignId('dependency_id')->nullable()->constrained('dependencies');
             $table->foreignId('audience_status_id')->nullable()->constrained('audience_statuses');
+            $table->foreignId('state_id')->nullable()->constrained('states');
+            $table->foreignId('municipality_id')->nullable()->constrained('municipalities');
             $table->timestamps();
         });
     }

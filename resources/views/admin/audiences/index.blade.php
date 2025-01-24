@@ -108,6 +108,16 @@
                         <label class="form-label"><strong>Cargo</strong></label>
                         <div class="form-control" id="audience-cargo"></div>
                     </div>
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Estado</strong></label>
+                        <div class="form-control" id="audience-state"></div>
+                    </div>
+                    <!-- Municipio -->
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Municipio</strong></label>
+                        <div class="form-control" id="audience-municipality"></div>
+                    </div>
                     <!-- Observación -->
                     <div class="col-md-12">
                         <label class="form-label"><strong>Observación</strong></label>
@@ -192,6 +202,8 @@
                 $("#audience-email").text(audience.email || "N/A");
                 $("#audience-observacion").text(audience.observacion || "N/A");
                 $("#audience-status").text(audience.status.name || "N/A");
+                $("#audience-state").text(audience.state.name || "N/A");
+                $("#audience-municipality").text(audience.municipality.name || "N/A");
                 // Rellenar otros campos dinámicamente...
                 $('#showAudienceModal').modal('show');
             } else if (action === 'delete') {

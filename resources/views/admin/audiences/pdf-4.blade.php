@@ -13,6 +13,7 @@
                 <strong>Email:</strong> {{ $audience->email ? $audience->email : 'N/A' }}<br>
                 <strong>Teléfono:</strong> {{ $audience->telefono ? $audience->telefono : 'N/A' }}<br>
                 <strong>Lugar/Dependencia:</strong> {{ $audience->dependency->name ? $audience->dependency->name : 'N/A' }}<br>
+                <strong>Estado/Municipio:</strong> {{ $audience->state->name ? $audience->state->name : 'N/A' }}, {{ $audience->municipality->name ? $audience->municipality->name : 'N/A' }} <br>
                 <strong>Como se comunicó:</strong> {{ $audience->contactType->name ? $audience->contactType->name : 'N/A' }}
             </td>
             <td style="width: 50%; vertical-align: top;">

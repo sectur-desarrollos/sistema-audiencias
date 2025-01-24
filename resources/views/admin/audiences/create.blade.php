@@ -81,6 +81,25 @@
                             @endforeach
                         </select>
                     </div>
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label for="state_id" class="form-label">Estado</label>
+                        <select class="form-select select2" id="state_id" name="state_id" required>
+                            <option value="">Seleccione un estado</option>
+                            @foreach ($states as $state)
+                                <option value="{{ $state->id }}" {{ old('state_id', $audience->state_id ?? '') == $state->id ? 'selected' : '' }}>
+                                    {{ $state->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <!-- Municipio -->
+                    <div class="col-md-6">
+                        <label for="municipality_id" class="form-label">Municipio</label>
+                        <select class="form-select select2" id="municipality_id" name="municipality_id">
+                        </select>
+                    </div>
                     <!-- Cargo -->
                     <div class="col-md-6">
                         <label for="cargo" class="form-label">Cargo</label>
@@ -134,7 +153,7 @@
             width: '100%' // Ajusta el ancho del select
         });
 
-
+        /* ACOMPAÑANTE */
         let companionIndex = 1;
         const maxCompanions = 10; // Máximo de acompañantes permitidos
 
@@ -179,6 +198,34 @@
                 $('#add-companion').prop('disabled', false);
             }
         });
+        /* ACOMPAÑANTE */
+
+
+        /* SELECT MUNICIPIOS Y ESTADO */
+        $('#state_id').on('change', function () {
+        const stateId = $(this).val();
+
+        // Vaciar y deshabilitar el select de municipios mientras se cargan los datos
+        $('#municipality_id').empty().append('<option value="">Cargando...</option>').prop('disabled', true);
+
+        // Obtener municipios por estado
+        if (stateId) {
+            $.ajax({
+                url: `/municipalities/${stateId}`, // Ruta para cargar municipios por estado
+                type: 'GET',
+                success: function (data) {
+                    $('#municipality_id').empty().append('<option value="">Seleccione un municipio</option>');
+                    data.forEach(function (municipality) {
+                        $('#municipality_id').append(`<option value="${municipality.id}">${municipality.name}</option>`);
+                    });
+                    $('#municipality_id').prop('disabled', false);
+                }
+            });
+        } else {
+            $('#municipality_id').empty().append('<option value="">Seleccione un municipio</option>').prop('disabled', false);
+        }
+    });
+        /* SELECT MUNICIPIOS Y ESTADO */
 
     });
 </script>

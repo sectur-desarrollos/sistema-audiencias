@@ -350,6 +350,22 @@
                                             Audiencia estado
                                         </a>
                                     </li>
+                                    <li>
+                                        <a class="nav-link d-flex align-items-center gap-2" href="{{route('states.index')}}">
+                                            <svg class="bi">
+                                                <use xlink:href="#file-earmark" />
+                                            </svg>
+                                            Estados de la república
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="nav-link d-flex align-items-center gap-2" href="{{route('municipalities.index')}}">
+                                            <svg class="bi">
+                                                <use xlink:href="#file-earmark" />
+                                            </svg>
+                                            Municipios de la república
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             

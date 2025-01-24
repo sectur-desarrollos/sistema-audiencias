@@ -116,8 +116,8 @@
     {{-- Content --}}
     <div class="content" @if (!$loop->last) style="page-break-after: always;" @endif>
         <!-- Información general -->
-        <h4 style="text-align: center; font-size: 10px;">Detalle de Audiencia</h4>
-        <table class="companions-table" style="width: 100%; margin-bottom: 20px;">
+        {{-- <h4 style="text-align: center; font-size: 10px;">Detalle de Audiencia</h4> --}}
+        <table class="companions-table" style="width: 100%;">
             <tr>
                 <td style="width: 50%;">
                     <strong>Nombre:</strong> {{ $a->nombre }} {{ $a->apellido_paterno }} {{ $a->apellido_materno }}<br>
@@ -125,6 +125,7 @@
                     <strong>Email:</strong> {{ $a->email ? $a->email : 'N/A' }}<br>
                     <strong>Teléfono:</strong> {{ $a->telefono ? $a->telefono : 'N/A' }}<br>
                     <strong>Lugar/Dependencia:</strong> {{ $a->dependency->name ?? 'N/A' }}<br>
+                    <strong>Estado/Municipio:</strong> {{ $a->state->name ? $a->state->name : 'N/A' }}, {{ $a->municipality->name ? $a->municipality->name : 'N/A' }} <br>
                     <strong>Cómo se comunicó:</strong> {{ $a->contactType->name ?? 'N/A' }}
                 </td>
                 <td style="width: 50%; vertical-align: top;">

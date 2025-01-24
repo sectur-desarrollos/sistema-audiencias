@@ -40,12 +40,11 @@
 
 @push('js')
 <script>
-    localStorage.clear();
     $(document).ready(function () {
         const table = $('#audiences-table').DataTable({
             processing: true,
             serverSide: true,
-            responsive: true,
+            // responsive: true,
             ajax: {
                 url: "{{ route('audiences.filter') }}",
                 data: function (d) {

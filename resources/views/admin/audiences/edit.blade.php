@@ -91,6 +91,31 @@
                             @endforeach
                         </select>
                     </div>
+                    <!-- Estado -->
+                    <div class="col-md-6">
+                        <label for="state_id" class="form-label">Estado</label>
+                        <select class="form-select select2" id="state_id" name="state_id" required>
+                            <option value="">Seleccione un estado</option>
+                            @foreach ($states as $state)
+                                <option value="{{ $state->id }}" {{ $audience->state_id == $state->id ? 'selected' : '' }}>
+                                    {{ $state->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <!-- Municipio -->
+                    <div class="col-md-6">
+                        <label for="municipality_id" class="form-label">Municipio</label>
+                        <select class="form-select select2" id="municipality_id" name="municipality_id" required>
+                            <option value="">Seleccione un municipio</option>
+                            @foreach ($municipalities as $municipality)
+                                <option value="{{ $municipality->id }}" {{ $audience->municipality_id == $municipality->id ? 'selected' : '' }}>
+                                    {{ $municipality->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
                     <!-- Cargo -->
                     <div class="col-md-6">
                         <label for="cargo" class="form-label">Cargo</label>
@@ -170,33 +195,65 @@
     // Acompañante
     let companionIndex = {{ $audience->companions->count() }};
 
-$('#add-companion').on('click', function () {
-    const container = $('#companions-container');
-    const newRow = `
-        <div class="row g-3 companion-row mb-2">
-            <div class="col-md-3">
-                <input type="text" name="companions[new_${companionIndex}][nombre]" class="form-control" placeholder="Nombre">
+    $('#add-companion').on('click', function () {
+        const container = $('#companions-container');
+        const newRow = `
+            <div class="row g-3 companion-row mb-2">
+                <div class="col-md-3">
+                    <input type="text" name="companions[new_${companionIndex}][nombre]" class="form-control" placeholder="Nombre">
+                </div>
+                <div class="col-md-2">
+                    <input type="text" name="companions[new_${companionIndex}][telefono]" class="form-control" placeholder="Teléfono">
+                </div>
+                <div class="col-md-3">
+                    <input type="email" name="companions[new_${companionIndex}][email]" class="form-control" placeholder="Correo Electrónico">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="companions[new_${companionIndex}][cargo]" class="form-control" placeholder="Cargo">
+                </div>
+                <div class="col-md-1 d-flex align-items-center">
+                    <button type="button" class="btn btn-sm btn-danger remove-companion">Eliminar</button>
+                </div>
             </div>
-            <div class="col-md-2">
-                <input type="text" name="companions[new_${companionIndex}][telefono]" class="form-control" placeholder="Teléfono">
-            </div>
-            <div class="col-md-3">
-                <input type="email" name="companions[new_${companionIndex}][email]" class="form-control" placeholder="Correo Electrónico">
-            </div>
-            <div class="col-md-3">
-                <input type="text" name="companions[new_${companionIndex}][cargo]" class="form-control" placeholder="Cargo">
-            </div>
-            <div class="col-md-1 d-flex align-items-center">
-                <button type="button" class="btn btn-sm btn-danger remove-companion">Eliminar</button>
-            </div>
-        </div>
-    `;
-    container.append(newRow);
-    companionIndex++;
-});
+        `;
+        container.append(newRow);
+        companionIndex++;
+    });
 
-$(document).on('click', '.remove-companion', function () {
-    $(this).closest('.companion-row').remove();
-});
+    $(document).on('click', '.remove-companion', function () {
+        $(this).closest('.companion-row').remove();
+    });
+
+    // Estado y Municipio
+      // Cargar municipios según el estado seleccionado
+      $('#state_id').on('change', function () {
+        const stateId = $(this).val();
+
+        // Deshabilitar el select de municipios mientras se cargan los datos
+        $('#municipality_id').empty().append('<option value="">Cargando...</option>').prop('disabled', true);
+
+        if (stateId) {
+            $.ajax({
+                url: `/municipalities/${stateId}`, // Ruta para cargar municipios por estado
+                type: 'GET',
+                success: function (data) {
+                    $('#municipality_id').empty().append('<option value="">Seleccione un municipio</option>');
+                    data.forEach(function (municipality) {
+                        $('#municipality_id').append(`
+                            <option value="${municipality.id}" ${municipality.id == '{{ $audience->municipality_id }}' ? 'selected' : ''}>
+                                ${municipality.name}
+                            </option>
+                        `);
+                    });
+                    $('#municipality_id').prop('disabled', false);
+                }
+            });
+        } else {
+            $('#municipality_id').empty().append('<option value="">Seleccione un municipio</option>').prop('disabled', false);
+        }
+    });
+
+    // Disparar el evento change para cargar municipios al abrir el formulario
+    $('#state_id').trigger('change');
 </script>
 @endpush
