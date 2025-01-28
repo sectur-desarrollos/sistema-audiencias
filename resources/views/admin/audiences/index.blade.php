@@ -153,7 +153,14 @@
             { data: 'nombre', name: 'nombre', orderable: false, searchable: true },
             { data: 'asunto', name: 'asunto', orderable: false },
             { data: 'status_badge', name: 'status_badge', orderable: false, searchable: false },
-            { data: 'fecha_llegada', name: 'fecha_llegada', orderable: false },
+            {
+                data: 'fecha_llegada',
+                name: 'fecha_llegada',
+                render: function (data) {
+                    return data ? dayjs(data).format('D [de] MMMM [de] YYYY') : 'N/A';
+                },
+                orderable: false
+            },
             { data: 'actions', name: 'actions', orderable: false, searchable: false }
         ],
         language: {
@@ -187,25 +194,38 @@
                 selectedAudienceId = id;
                 $('#pdfModal').modal('show');
             } else if (action === 'show') {
-                const audience = table.row($(this).parents('tr')).data();
-                $("#audience-folio").text(audience.folio || "N/A");
-                $("#audience-nombre").text(audience.nombre || "N/A");
-                $("#audience-apellido-paterno").text(audience.apellido_paterno || "N/A");
-                $("#audience-apellido-materno").text(audience.apellido_materno || "N/A");
-                $("#audience-asunto").text(audience.asunto || "N/A");
-                $("#audience-fecha-llegada").text(audience.fecha_llegada || "N/A");
-                $("#audience-hora-llegada").text(audience.hora_llegada || "N/A");
-                $("#audience-telefono").text(audience.telefono || "N/A");
-                $("#audience-lugar-dependencia").text(audience.dependency.name || "N/A");
-                $("#audience-tipo-contacto").text(audience.contact_type.name || "N/A");
-                $("#audience-cargo").text(audience.cargo || "N/A");
-                $("#audience-email").text(audience.email || "N/A");
-                $("#audience-observacion").text(audience.observacion || "N/A");
-                $("#audience-status").text(audience.status.name || "N/A");
-                $("#audience-state").text(audience.state.name || "N/A");
-                $("#audience-municipality").text(audience.municipality.name || "N/A");
-                // Rellenar otros campos dinámicamente...
-                $('#showAudienceModal').modal('show');
+                $.ajax({
+                    url: `/audiences/${id}`,
+                    method: 'GET',
+                    success: function (audience) {
+                        // Rellena los campos del modal con los datos obtenidos
+                        $("#audience-folio").text(audience.folio || "N/A");
+                        $("#audience-nombre").text(audience.nombre || "N/A");
+                        $("#audience-apellido-paterno").text(audience.apellido_paterno || "N/A");
+                        $("#audience-apellido-materno").text(audience.apellido_materno || "N/A");
+                        $("#audience-asunto").text(audience.asunto || "N/A");
+                        // Formatea la fecha para mostrarla en el modal
+                        const fechaHumana = audience.fecha_llegada 
+                            ? dayjs(audience.fecha_llegada).format('D [de] MMMM [de] YYYY')
+                            : 'N/A';
+                        $("#audience-fecha-llegada").text(fechaHumana);
+                        $("#audience-hora-llegada").text(audience.hora_llegada || "N/A");
+                        $("#audience-telefono").text(audience.telefono || "N/A");
+                        $("#audience-lugar-dependencia").text(audience.dependency?.name || "N/A");
+                        $("#audience-tipo-contacto").text(audience.contact_type?.name || "N/A");
+                        $("#audience-cargo").text(audience.cargo || "N/A");
+                        $("#audience-email").text(audience.email || "N/A");
+                        $("#audience-observacion").text(audience.observacion || "N/A");
+                        $("#audience-status").text(audience.status?.name || "N/A");
+                        $("#audience-state").text(audience.state?.name || "N/A");
+                        $("#audience-municipality").text(audience.municipality?.name || "N/A");
+                        // Abre el modal
+                        $('#showAudienceModal').modal('show');
+                    },
+                    error: function () {
+                        alert('Error al obtener los detalles de la audiencia.');
+                    }
+                });
             } else if (action === 'delete') {
                 if (confirm('¿Eliminar esta audiencia?')) {
                     $.ajax({

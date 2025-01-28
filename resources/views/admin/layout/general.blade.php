@@ -26,9 +26,11 @@
 
     {{-- select2 CSS/JS--}}
     <link href="{{asset('assets/select2/css/select2.min.css')}}" rel="stylesheet" />
-
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css">
+    
+    <link href="{{asset('assets/datatables/css/jquery.dataTables.min.css')}}" rel="stylesheet" />
+    <link href="{{asset('assets/datatables/css/responsive.dataTables.min.css')}}" rel="stylesheet" />
+    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"> --}}
+    {{-- <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css"> --}}
     
 
     <style>
@@ -474,11 +476,23 @@
     {{-- Jquery JS --}}
     <script src="{{asset('assets/jquery/js/jquery-3-7-1.min.js')}}"></script>
 
+    {{-- select2 --}}
     <script src="{{asset('assets/select2/js/select2.min.js')}}"></script>
-
+    
     {{-- Js de Datatables --}}
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+    <script src="{{asset('assets/datatables/js/jquery.dataTables.min.js')}}"></script>
+    <script src="{{asset('assets/datatables/js/dataTables.responsive.min.js')}}"></script>
+    
+
+    {{-- Dayjs --}}
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/locale/es.js"></script>
+    <script>
+             dayjs.locale('es');
+    </script>
+
+    {{-- <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script> --}}
 
     @stack('js')
 </body>

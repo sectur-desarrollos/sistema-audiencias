@@ -17,10 +17,19 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         \App\Models\User::factory()->create([
-            'name' => 'JFPG',
+            'name' => 'José Fernando Pérez García',
+            'nickname' => 'jperez',
             'email' => 'jfpg@turismochiapas.gob.mx',
             'password' => bcrypt('123')
         ]);
+
+        \App\Models\User::factory()->create([
+            'name' => 'Berenice Carbot Gutiérrez',
+            'nickname' => 'bcarbot',
+            'email' => 'bcarbot.sectur@gmail.com',
+            'password' => bcrypt('RebeRodo')
+        ]);
+        /*
         \App\Models\Dependency::create([
             'name' => 'Secretaría de Hacienda',
             'activo' => true,
@@ -45,6 +54,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Email',
             'activo' => true,
         ]);
+        */
         // Estatus de Audiencia
         $statuses = [
             ['name' => 'Iniciado', 'description' => 'La audiencia está en etapa inicial.', 'color' => '#0a2ee6', 'activo' => true],

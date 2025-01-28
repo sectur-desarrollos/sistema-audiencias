@@ -52,8 +52,9 @@ class AudienceController extends Controller
             'cargo' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'observacion' => 'nullable|string',
-            'contact_type_id' => 'required|exists:contact_types,id',
-            'dependency_id' => 'required|exists:dependencies,id',
+            'contact_type_id' => 'nullable|string',
+            // 'dependency_id' => 'required|exists:dependencies,id',
+            'dependency_id' => 'nullable|string',
             'audience_status_id' => 'required|exists:audience_statuses,id',
             // Acompañantes
             'companions.*.nombre' => 'nullable|string|max:255',
@@ -64,6 +65,15 @@ class AudienceController extends Controller
             'state_id' => 'required|exists:states,id',
             'municipality_id' => 'nullable|exists:municipalities,id',
         ]);
+
+        // Verificar y/o crear dependencia si es necesario
+        if (!empty($validated['dependency_id']) && !is_numeric($validated['dependency_id'])) {
+            $validated['dependency_id'] = $this->getOrCreateDependency($validated['dependency_id']);
+        }
+        // Verificar y/o crear dependencia si es necesario
+        if (!empty($validated['contact_type_id']) && !is_numeric($validated['contact_type_id'])) {
+            $validated['contact_type_id'] = $this->getOrCreateContactType($validated['contact_type_id']);
+        }
 
         // Generar el folio único
         $nombreInicial = strtoupper(substr($validated['nombre'], 0, 1));
@@ -89,7 +99,12 @@ class AudienceController extends Controller
 
     public function show(Audience $audience)
     {
-        //
+       try {
+            // Devuelve la audiencia junto con las relaciones necesarias en formato JSON
+            return response()->json($audience->load('status', 'dependency', 'contactType', 'state', 'municipality'));
+        } catch (\Throwable $th) {
+            return response()->json(['error' => 'Error al eliminar la audiencia.'], 500);
+       }
     }
     /**
      * Show the form for editing the specified resource.
@@ -161,6 +176,29 @@ class AudienceController extends Controller
             return response()->json(['error' => 'Error al eliminar la audiencia.'], 500);
         }
     }
+
+    private function getOrCreateDependency(string $dependencyName): int
+    {
+        // Buscar o crear la dependencia
+        $dependency = Dependency::firstOrCreate(
+            ['name' => $dependencyName],
+            ['activo' => true] // Otros valores por defecto si son necesarios
+        );
+    
+        return $dependency->id;
+    }
+
+    private function getOrCreateContactType(string $contactTypeName): int
+    {
+        // Buscar o crear el tipo de contacto
+        $contactType = ContactType::firstOrCreate(
+            ['name' => $contactTypeName],
+            ['activo' => true] // Otros valores por defecto si son necesarios
+        );
+    
+        return $contactType->id;
+    }
+
     
     // PDF Con toda la información
     public function generatePDF(Audience $audience)

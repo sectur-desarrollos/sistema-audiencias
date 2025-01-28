@@ -153,6 +153,54 @@
             width: '100%' // Ajusta el ancho del select
         });
 
+        // Inicializar Select2 con soporte para etiquetas (valores nuevos)
+        $('#dependency_id').select2({
+            placeholder: "Seleccione una dependencia o escriba para agregar nueva",
+            allowClear: true, // Permite limpiar la selección
+            tags: true, // Habilita valores personalizados
+            width: '100%' // Ajusta el ancho del select
+        });
+
+
+        // Agregar lógica para mantener el valor escrito en el select al enviar el formulario
+        $('#dependency_id').on('select2:select', function (e) {
+            const selectedValue = e.params.data.id;
+            if (!isNaN(selectedValue)) {
+                // Si el valor seleccionado es un ID, no hacemos nada
+                return;
+            }
+
+            // Si es un texto nuevo, lo dejamos en el select para que el backend lo maneje
+            $(this).append(`<option value="${selectedValue}" selected>${selectedValue}</option>`);
+        });
+
+
+
+         // Inicializar Select2 con soporte para etiquetas (valores nuevos) en Tipo de Contacto
+        $('#contact_type_id').select2({
+            placeholder: "Seleccione un tipo de contacto o escriba uno nuevo",
+            allowClear: true, // Permite limpiar la selección
+            tags: true, // Habilita valores personalizados
+            width: '100%' // Ajusta el ancho del select
+        });
+
+        // Agregar lógica para mantener el valor escrito en el select al enviar el formulario
+        $('#contact_type_id').on('select2:select', function (e) {
+            const selectedValue = e.params.data.id;
+            if (!isNaN(selectedValue)) {
+                // Si el valor seleccionado es un ID, no hacemos nada
+                return;
+            }
+
+            // Si es un texto nuevo, lo dejamos en el select para que el backend lo maneje
+            $(this).append(`<option value="${selectedValue}" selected>${selectedValue}</option>`);
+        });
+
+
+
+
+
+
         /* ACOMPAÑANTE */
         let companionIndex = 1;
         const maxCompanions = 10; // Máximo de acompañantes permitidos

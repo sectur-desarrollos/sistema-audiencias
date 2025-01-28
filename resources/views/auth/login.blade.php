@@ -175,7 +175,7 @@
         <form method="POST" action="{{ route('login.submit') }}">
             @csrf
             <h1 class="h3 mb-3 fw-normal">Iniciar Sesión</h1>
-
+    
             @if($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -185,21 +185,21 @@
                 </ul>
             </div>
             @endif
+    
             <div class="form-floating">
-                <input type="email" class="form-control" id="floatingInput" name="email" placeholder="name@example.com"
-                    required>
-                <label for="floatingInput">Email</label>
+                <input type="text" class="form-control" id="floatingInput" name="nickname" placeholder="nickname" required>
+                <label for="floatingInput">Nickname</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password"
-                    required>
+                <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>
                 <label for="floatingPassword">Password</label>
             </div>
-
+    
             <button class="btn btn-primary w-100 py-2" type="submit">Iniciar Sesión</button>
             <p class="mt-5 mb-3 text-body-secondary">&copy; SECTUR Chiapas - 2024</p>
         </form>
     </main>
+    
 
     <script src="{{asset('assets/bootstrap/assets_general/dist/js/bootstrap.bundle.min.js')}}"></script>
     {{-- <script src="../assets/dist/js/bootstrap.bundle.min.js"></script> --}}

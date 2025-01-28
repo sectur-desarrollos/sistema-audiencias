@@ -28,6 +28,8 @@
 <br>
 <br>
 <br>
+<br>
+<br>
 
 <!-- Acompañantes -->
 @if ($audience->companions->isNotEmpty())

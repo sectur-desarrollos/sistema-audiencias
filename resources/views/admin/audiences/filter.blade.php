@@ -59,7 +59,14 @@
                 { data: 'nombre', name: 'nombre' },
                 { data: 'asunto', name: 'asunto' },
                 { data: 'status_badge', name: 'status_badge', orderable: false, searchable: false },
-                { data: 'fecha_llegada', name: 'fecha_llegada' },
+                {
+                    data: 'fecha_llegada',
+                    name: 'fecha_llegada',
+                    render: function (data) {
+                        return data ? dayjs(data).format('D [de] MMMM [de] YYYY') : 'N/A';
+                    },
+                    orderable: false
+                },
                 // { data: 'actions', name: 'actions', orderable: false, searchable: false }
             ],
             language: {

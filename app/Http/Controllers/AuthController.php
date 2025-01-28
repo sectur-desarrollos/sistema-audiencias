@@ -22,17 +22,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'nickname' => 'required|string',
             'password' => 'required',
         ]);
-
-        if (Auth::attempt($credentials)) {
+    
+        if (Auth::attempt(['nickname' => $credentials['nickname'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
             return redirect()->intended('/dashboard');
         }
-
+    
         return back()->withErrors([
-            'email' => 'Las credenciales no son correctas.',
+            'nickname' => 'Las credenciales no son correctas.',
         ]);
     }
 
