@@ -6,10 +6,12 @@ use App\Models\Audience;
 use App\Models\AudienceStatus;
 use App\Models\ContactType;
 use App\Models\Dependency;
+use App\Models\HistorialLog;
 use App\Models\State;
 use App\Models\Municipality;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables as FacadesDataTables;
 
 class AudienceController extends Controller
@@ -46,7 +48,7 @@ class AudienceController extends Controller
             'apellido_paterno' => 'nullable|string|max:255',
             'apellido_materno' => 'nullable|string|max:255',
             'asunto' => 'required|string',
-            'hora_llegada' => 'required',
+            'hora_llegada' => 'nullable|date_format:H:i',
             'fecha_llegada' => 'required|date',
             'telefono' => 'nullable|string|max:15|regex:/^\d+$/',
             'cargo' => 'nullable|string|max:255',
@@ -88,11 +90,22 @@ class AudienceController extends Controller
         $audience = Audience::create($validated);
 
         // Guardar acompañantes
-        if (!empty($request->companions)) {
-            foreach ($request->companions as $companion) {
-                $audience->companions()->create($companion);
-            }
+        $companions = $request->input('companions', []); // Obtén los acompañantes del request
+        foreach ($companions as $companion) {
+            $audience->companions()->create($companion);
         }
+
+        // Preparar todos los valores para el log
+        $todosLosValores = [
+            'audience' => $validated,
+            'companions' => $companions,
+        ];
+
+        $this->log(
+            'Creación',
+            'AudienceController',
+            'Agregó el registro: "' . $validated['folio'] . '" con la información: ' . json_encode($todosLosValores)
+        );
 
         return redirect()->route('audiences.index')->with('success', 'Audiencia creada exitosamente.');
     }
@@ -152,13 +165,26 @@ class AudienceController extends Controller
         // Actualizar el registro
         $audience->update($validated);
 
-        // Actualizar acompañantes
+        // Manejo de acompañantes
+        $companions = $request->input('companions', []);
         $audience->companions()->delete(); // Elimina los anteriores
-        if (!empty($request->companions)) {
-            foreach ($request->companions as $companion) {
-                $audience->companions()->create($companion);
-            }
+
+        foreach ($companions as $companion) {
+            $audience->companions()->create($companion);
         }
+
+        // Preparar todos los valores para el log
+        $todosLosValores = [
+            'audience' => $validated,
+            'companions' => $companions,
+        ];
+
+        // Agregar log de la actualización
+        $this->log(
+            'Actualización',
+            'AudienceController',
+            'Actualizó el registro: "' . $audience->folio . '" con la nueva información: ' . json_encode($todosLosValores)
+        );
 
         // Redirigir a la lista de audiencias con un mensaje de éxito
         return redirect()->route('audiences.index')->with('success', 'Audiencia actualizada exitosamente.');
@@ -170,12 +196,40 @@ class AudienceController extends Controller
     public function destroy(Audience $audience)
     {
         try {
+            // Guardar la información para el log antes de eliminar
+            $audienceData = [
+                'folio' => $audience->folio,
+                'nombre' => $audience->nombre,
+                'apellido_paterno' => $audience->apellido_paterno,
+                'apellido_materno' => $audience->apellido_materno,
+                'asunto' => $audience->asunto,
+                'companions' => $audience->companions()->get()->toArray(),
+            ];
+    
+            // Eliminar el registro
+            $audience->companions()->delete(); // Eliminar acompañantes primero si están relacionados
             $audience->delete();
+    
+            // Registrar el log de eliminación
+            $this->log(
+                'Eliminación',
+                'AudienceController',
+                'Eliminó el registro con folio: "' . $audienceData['folio'] . '" y la información: ' . json_encode($audienceData)
+            );
+    
             return response()->json(['success' => 'Audiencia eliminada correctamente.'], 200);
         } catch (\Throwable $th) {
+            // Registrar un log en caso de error si es necesario
+            $this->log(
+                'Error',
+                'AudienceController',
+                'Error al intentar eliminar el registro con ID: ' . $audience->id . '. Mensaje: ' . $th->getMessage()
+            );
+    
             return response()->json(['error' => 'Error al eliminar la audiencia.'], 500);
         }
     }
+    
 
     private function getOrCreateDependency(string $dependencyName): int
     {
@@ -320,4 +374,19 @@ class AudienceController extends Controller
 
         return $pdf->stream('audiencia.pdf');
     }
+
+
+    public function log($accion, $lugar, $informacion)
+    {
+        HistorialLog::create([
+            'usuario_id' => Auth::user()->id,
+            'usuario_nombre' => Auth::user()->name,
+            'modulo' => 'Audiencia',
+            'accion' => $accion,
+            'lugar' => $lugar,
+            'informacion' => $informacion,
+            'fecha_accion' => now(),
+        ]);
+    }
+
 }

@@ -69,7 +69,7 @@
                     <!-- Hora -->
                     <div class="col-md-6">
                         <label for="hora_llegada" class="form-label">Hora de Llegada</label>
-                        <input type="time" class="form-control" id="hora_llegada" name="hora_llegada" required>
+                        <input type="time" class="form-control" id="hora_llegada" name="hora_llegada">
                     </div>
                     <!-- Tipo de Contacto -->
                     <div class="col-md-6">

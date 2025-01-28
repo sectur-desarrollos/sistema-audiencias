@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\AudienceController;
 use App\Http\Controllers\AudienceStatusController;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,7 @@ use App\Http\Controllers\ContactTypeController;
 use App\Http\Controllers\DependencyController;
 use App\Http\Controllers\MunicipalityController;
 use App\Http\Controllers\StateController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
@@ -17,7 +19,8 @@ Route::get('/audiences/data', [AudienceController::class, 'getAudiencesData'])->
 Route::get('/audiences/filter', [AudienceController::class, 'filter'])->name('audiences.filter');
 Route::post('/audiences/export-pdf', [AudienceController::class, 'exportToPDF'])->name('audiences.export.pdf');
 Route::get('/municipalities/{state}', [MunicipalityController::class, 'getByState'])->name('getMunicipalitiesByState');
-
+Route::get('activity-logs-data', [ActivityLogController::class, 'activityLogsDatatables'])->name('activity-logs-data'); 
+Route::get('users-data', [UserController::class, 'getUsersData'])->name('users.data');
     
 Route::middleware(['auth'])->group(function () {
     
@@ -47,5 +50,10 @@ Route::middleware(['auth'])->group(function () {
 
     // Municipios de la república
     Route::resource('municipalities', MunicipalityController::class)->names('municipalities');
+
+    // Ruta resource para las actividades de los logs
+    Route::resource('activity-logs', ActivityLogController::class)->names('activity-logs');
+
+    Route::resource('users', UserController::class)->names('users');
 
 });

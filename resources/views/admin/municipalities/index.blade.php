@@ -141,7 +141,7 @@
                     </div>
                     <div class="form-check">
                         <input type="hidden" name="activo" value="0">
-                        <input type="checkbox" name="activo" value="1" class="form-check-input" id="activo">
+                        <input type="checkbox" name="activo" value="1" class="form-check-input" id="activo" checked>
                         <label for="activo" class="form-check-label">Activo</label>
                     </div>
                 </div>

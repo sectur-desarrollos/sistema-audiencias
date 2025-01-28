@@ -329,6 +329,14 @@
                                     
                                 <ul class="collapse list-unstyled ps-3" id="catalogsMenu">
                                     <li>
+                                        <a class="nav-link d-flex align-items-center gap-2" href="{{route('users.index')}}">
+                                            <svg class="bi">
+                                                <use xlink:href="#file-earmark" />
+                                            </svg>
+                                            Usuarios
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a class="nav-link d-flex align-items-center gap-2" href="{{route('contact-types.index')}}">
                                             <svg class="bi">
                                                 <use xlink:href="#file-earmark" />
@@ -369,6 +377,13 @@
                                         </a>
                                     </li>
                                 </ul>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link d-flex align-items-center gap-2" href="{{ route('activity-logs.index') }}">
+                                    <svg class="bi">
+                                        <use xlink:href="#file-earmark" /></svg>
+                                   Logs
+                                </a>
                             </li>
                             
                             <li class="nav-item">
